@@ -1,0 +1,13 @@
+.matvis {
+  text-align: center;
+  border-left: 6px solid #073b4c;
+  padding: 1em;
+}
+
+.matvis-title {
+  text-transform: uppercase;
+}
+
+.matvis-value {
+  font-size: 3em;
+}
