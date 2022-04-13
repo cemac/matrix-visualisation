@@ -2,30 +2,11 @@ library(readxl)
 library(dplyr)
 library(forcats)
 library(purrr)
+library(jsonlite)
 
-file_path <- "~/Projects/LBF2/data/Copy of flatsheet of matrix for visualisation v.1.xlsx"
+file_path <- "data/Copy of flatsheet of matrix for visualisation v.1.xlsx"
 
-traffic_light_levels = c(
-  "Limited or no evidence" = "0",
-  "Trade-offs" = "1",
-  "Mixed" = "2",
-  "Benefits" = "3"
-)
-
-traffic_light_confidence <- c(
-  "Limited or no evidence" = "0",
-  "Very low confidence" = "1",
-  "Low confidence" = "2",
-  "Medium confidence" = "3",
-  "High confidence" = "4"
-)
-
-context_dependence <- c(
-  "Unknown or no evidence" = "0",
-  "Low context dependence" = "1",
-  "Moderate context dependence" = "2",
-  "High context dependence" = "3"
-)
+matvis_vars <- jsonlite::read_json("assets/matvis_vars.json", simplifyVector = TRUE)
 
 getFlatsheetData <- function(levels = 1, region = NA, simplify = TRUE) {
   rtn <- purrr::map(levels, function(level) {
@@ -35,14 +16,15 @@ getFlatsheetData <- function(levels = 1, region = NA, simplify = TRUE) {
       dplyr::mutate(`Cell code` = as.integer(`Cell code`),
                     `Traffic light level` = 
                       forcats::fct_recode(factor(as.integer(`Traffic light level`)),
-                                          !!!traffic_light_levels),
+                                          !!!unlist(matvis_vars$traffic_light_level)),
                     `Traffic light confidence` = 
                       forcats::fct_recode(factor(as.integer(`Traffic light confidence`)),
-                                          !!!traffic_light_confidence))
+                                          !!!unlist(matvis_vars$traffic_light_confidence)))
+    cd_levels = unlist(matvis_vars$context_dependence)
     if (as.integer(level) == 2) {
       df <- dplyr::mutate(df, `Context dependence` =
                             forcats::fct_recode(factor(as.integer(`Context dependence`)),
-                                                !!!context_dependence),
+                                                !!!cd_levels),
                           Reference = NA)
     }
     if (!is.na(region)) {
@@ -58,5 +40,5 @@ getFlatsheetData <- function(levels = 1, region = NA, simplify = TRUE) {
 
 getOptions <- function(col_name) {
   getFlatsheetData() %>%
-    dplyr::select(col_name) %>% unlist() %>% unique() %>% sort()
+    dplyr::select(all_of(col_name)) %>% unlist() %>% unique() %>% sort()
 }

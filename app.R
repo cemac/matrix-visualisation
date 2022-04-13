@@ -3,10 +3,10 @@ source("helpers.R")
 
 regions <- getOptions("Region")
 transitions <- getOptions("Transition")
+ad_mit <- getOptions("Ad/Mit")
 
-matvis <- function(title, level, region = "Africa") {
+matvis <- function(title, level, input) {
   group_cols <- c(
-    "Region",
     "Transition",
     "Ad/Mit",
     "Intervention - Level 1"
@@ -15,25 +15,37 @@ matvis <- function(title, level, region = "Africa") {
     group_cols <- c(group_cols,
                     "Intervention - Level 2")
   }
-  data <- getFlatsheetData(level, region) %>%
-    dplyr::nest_by(!!!syms(group_cols))
-  list(title = title, data = data)
+  # Add co-benefit categories to grouping
+  group_cols <- c(group_cols, "Co-benefit category")
+  data <- getFlatsheetData(level, input$region) %>%
+    dplyr::filter(Transition %in% input$transition,
+                  `Ad/Mit` %in% input$ad_mit) %>%
+    dplyr::nest_by(!!!syms(group_cols), .key = "Co-benefits") %>%
+    tidyr::pivot_wider(names_from = `Co-benefit category`,
+                       values_from = `Co-benefits`)
+
+  # Combine intervention information
+  data <- tidyr::unite(data,
+                       "Intervention",
+                       `Ad/Mit`,
+                       `Intervention - Level 1`,
+                       sep = ";")
+  if (level == 2) {
+    data <- tidyr::unite(data,
+                         "Intervention",
+                         Intervention,
+                         `Intervention - Level 2`,
+                         sep = ": ")
+  }
+  list(title = input$region, data = data, groups = group_cols)
 }
 
 matvisOutput <- function(id) {
   el <- shiny::tags$div(
     id = id, class = "matvis",
-    h1(id = sprintf("%s-matvis-value", id), class = "matvis-value"),
-    p(id = sprintf("%s-matvis-title", id), class = "matvis-title"),
-    shiny::tags$table(id = sprintf("%s-matvis-table", id), 
-                      class = "matvis-table",
-                      shiny::tags$tr(
-                        shiny::tags$th("Region"),
-                        shiny::tags$th("Transition"),
-                        shiny::tags$th("Ad/Mit"),
-                        shiny::tags$th("Intervention - Level 1"),
-                        shiny::tags$th("Co-benefits")
-                      ))
+    h1(id = sprintf("%s-matvis-title", id), class = "matvis-title"),
+    p(id = sprintf("%s-matvis-desc", id), class = "matvis-desc"),
+    shiny::tags$div(id = sprintf("%s-matvis-table", id))
   )
   
   path <- normalizePath("assets")
@@ -52,7 +64,7 @@ matvisOutput <- function(id) {
 }
 
 renderMatvis <- function(expr, env = parent.frame(), 
-                        quoted = FALSE) {
+                         quoted = FALSE) {
   # Convert the expression + environment into a function
   func <- shiny::exprToFunction(expr, env, quoted)
   
@@ -79,9 +91,10 @@ ui <- fluidPage(
                               selected = transitions)
     ),
     column(4,
-           selectInput("level",
-                       "Intervention level",
-                       1:2)
+           checkboxGroupInput("ad_mit",
+                              label = "Adaptation/Mitigation",
+                              choices = ad_mit,
+                              selected = ad_mit)
     )
   ),
   
@@ -93,11 +106,11 @@ ui <- fluidPage(
 
 server <- function(input, output){
   output$level1 <- renderMatvis({
-    matvis("Level 1", 1)
+    matvis("Level 1", 1, input = input)
   })
 
   output$level2 <- renderMatvis({
-    matvis("Level 2", 2)
+    matvis("Level 2", 2, input = input)
   })
 }
 
