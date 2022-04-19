@@ -48,6 +48,7 @@
   display: block;
   transform: rotate(270deg);
   padding: 0 0.5em;
+  width: min-content;
 }
 
 .matvis-table-group-0 td {
