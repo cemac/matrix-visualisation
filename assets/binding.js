@@ -12,12 +12,18 @@ $.extend(matVisBinding, {
     let title_id = el.id + '-matvis-title';
     document.getElementById(title_id).innerText = data.title;
 
+    // create layout for co-benefits visualisation
+    let table_id = el.id + '-matvis-table';
+
     let mydata = data.data;
     let nrow = mydata[Object.keys(mydata)[0]].length;
+    if (nrow === 0) {
+      document.getElementById(table_id).innerText = "No data to be displayed";
+      return;
+    }
 
     let mvars = matvis_vars.responseJSON;
 
-    let table_id = el.id + '-matvis-table';
     let table = document.createElement("table");
     table.className = "matvis-table";
     let groups = [];
