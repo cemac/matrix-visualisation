@@ -76,7 +76,8 @@ renderMatvis <- function(expr, env = parent.frame(),
 ui <- fluidPage(
   
   # Application title
-  titlePanel("Matrix Co-benefits Visualisation"),
+  titlePanel("Assessment of Global and Regional Co-benefits and Trade-offs
+             of Climate Mitigation and Adaptation Options"),
   
   fluidRow(
     column(4,
