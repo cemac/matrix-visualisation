@@ -136,7 +136,7 @@ $.extend(matVisBinding, {
     let legend = document.getElementById(legend_id);
     let legend_header = document.createElement("h3");
     legend_header.innerText = 'Key';
-    legend.appendChild(legend_header);
+    legend.replaceChildren(legend_header);
 
     addLegend(legend, "Co-impact", "matvis-tll", mvars.traffic_light_level);
     addLegend(legend, "Confidence", "matvis-tlc", mvars.traffic_light_confidence);
