@@ -53,10 +53,33 @@
   background-color: #e7edeb; /* grey */
 }
 
+.matvis-cb {
+  background-size: 72%;
+  background-position: center center;
+  background-repeat: no-repeat;
+}
+.matvis-cb-economic {
+  background-image: url("./img/icons/economic.png");
+}
+.matvis-cb-ecosystem {
+  background-image: url("./img/icons/ecosystems.png");
+}
+.matvis-cb-energy {
+  background-image: url("./img/icons/energy.png");
+}
+.matvis-cb-health {
+  background-image: url("./img/icons/health.png");
+}
+.matvis-cb-socio-cultural {
+  background-image: url("./img/icons/socio-cultural.png");
+}
+
 .matvis-cb span {
   display: block;
   transform: rotate(315deg);
   padding: 1em 0;
+  position: relative;
+  top: -5em;
 }
 
 .matvis-table .matvis-th:first-child {

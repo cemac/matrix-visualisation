@@ -68,6 +68,7 @@ $.extend(matVisBinding, {
         class_names.push(row.rowIndex === 0 ? 'matvis-th' : 'matvis-td');
         if (row.rowIndex === 0 && mvars.co_benefits.indexOf(col) !== -1) {
           class_names.push('matvis-cb');
+          class_names.push('matvis-cb-' + col.toLowerCase())
         }
         var entry = row.rowIndex === 0 ? col : mydata[col][row.rowIndex - 1];
         if (typeof entry === 'string') {
