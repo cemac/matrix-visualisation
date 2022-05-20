@@ -13,6 +13,27 @@
   font-size: 3em;
 }
 
+.matvis-legend {
+  float: right;
+}
+
+.matvis-legend-key {
+  line-height: 1.4em;
+  width: 4.5em;
+}
+
+.matvis-legend-key::before {
+  content: "\00a0";
+  font-size: 1.2em;
+  position: relative;
+}
+
+/* Adjust position of symbols */
+.matvis-legend-key.matvis-tlc-1::before { top: 1px; }
+.matvis-legend-key.matvis-tlc-2::before,
+.matvis-legend-key.matvis-tlc-3::before,
+.matvis-legend-key.matvis-tlc-4::before { top: 3px; }
+
 .matvis-table {
   border-spacing: 5px;
   border-collapse: separate;
@@ -79,12 +100,13 @@
 .matvis-table .matvis-tll-3 { background-color: #80cc28; } /* green */
 
 /* Traffic light confidence */
-.matvis-tlc-0::before { content: ""; } /* grey */
+.matvis-tlc-0::before { content: "\00a0"; } /* grey */
 .matvis-tlc-1::before { content: "\25cb"; } /* open circle */
 .matvis-tlc-2::before { content: "\2022"; } /* bullet */
 .matvis-tlc-3::before { content: "\2022 \2022"; } /* 2 bullets */
 .matvis-tlc-4::before { content: "\2022 \2022 \2022"; } /* 3 bullets */
 
+/* Font size adjustments to make symbol sizes match */
 .matvis-tlc-1::before { font-size: 1.2em; }
 .matvis-tlc-2::before,
 .matvis-tlc-3::before,

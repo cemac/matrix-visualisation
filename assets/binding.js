@@ -2,6 +2,32 @@ var matVisBinding = new Shiny.OutputBinding();
 
 let matvis_vars = $.getJSON( "matvis-1.0.0/matvis_vars.json");
 
+let addLegend = function(node, name, cell_class, levels) {
+
+    let title = document.createElement("h4");
+    title.innerText = name;
+    node.appendChild(title);
+
+    // create legend
+    let table = document.createElement("table");
+    table.className = "matvis-table matvis-table-legend";
+
+    for (let key of Object.keys(levels)) {
+      let row = table.insertRow(-1);
+      let cell = row.insertCell(-1);
+      let class_names = [];
+      class_names.push('matvis-td');
+      class_names.push('matvis-legend-key');
+      class_names.push(cell_class + '-' + levels[key]);
+      cell.className = class_names.join(' ');
+
+      let label_cell = row.insertCell(-1);
+      label_cell.className = 'matvis-legend-label';
+      label_cell.innerText = key;
+    }
+    node.appendChild(table);
+}
+
 $.extend(matVisBinding, {
   find: function(scope) {
     return $(scope).find(".matvis");
@@ -103,6 +129,16 @@ $.extend(matVisBinding, {
         }
       }
     }
+
+    // insert the legend
+    let legend_id = el.id + '-matvis-legend';
+    let legend = document.getElementById(legend_id);
+    let legend_header = document.createElement("h3");
+    legend_header.innerText = 'Key';
+    legend.appendChild(legend_header);
+
+    addLegend(legend, "Co-impact", "matvis-tll", mvars.traffic_light_level);
+    addLegend(legend, "Confidence", "matvis-tlc", mvars.traffic_light_confidence);
   }
 });
 

@@ -45,6 +45,7 @@ matvisOutput <- function(id) {
     id = id, class = "matvis",
     h1(id = sprintf("%s-matvis-title", id), class = "matvis-title"),
     p(id = sprintf("%s-matvis-desc", id), class = "matvis-desc"),
+    shiny::tags$div(id = sprintf("%s-matvis-legend", id), class = "matvis-legend"),
     shiny::tags$div(id = sprintf("%s-matvis-table", id))
   )
   
