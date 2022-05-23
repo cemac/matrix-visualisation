@@ -177,3 +177,13 @@
 .matvis-td:hover .matvis-info {
   display: block;
 }
+
+section p {
+  max-width: 55em;
+}
+
+.toc {
+  list-style: none;
+  margin: 10px 0;
+  padding: 10px 15px;
+}

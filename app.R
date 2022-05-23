@@ -102,7 +102,8 @@ ui <- fluidPage(
   
   tabsetPanel(
     tabPanel("Level 1", matvisOutput("level1")),
-    tabPanel("Level 2", matvisOutput("level2"))
+    tabPanel("Level 2", matvisOutput("level2")),
+    tabPanel("About", htmlTemplate("static/about.html"))
   )
 )
 
