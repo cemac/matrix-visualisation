@@ -4,31 +4,44 @@ library(forcats)
 library(purrr)
 library(jsonlite)
 
-file_path <- "data/Copy of flatsheet of matrix for visualisation v.1.xlsx"
-
 matvis_vars <- jsonlite::read_json("assets/matvis_vars.json", simplifyVector = TRUE)
 
 getFlatsheetData <- function(levels = 1, region = NA, simplify = TRUE) {
   rtn <- purrr::map(levels, function(level) {
-    sheet = paste("Flatsheet level", level)
-    df <- readxl::read_excel(file_path, sheet = sheet) %>%
-      dplyr::slice(-1) %>%
-      dplyr::mutate(`Cell code` = as.integer(`Cell code`),
-                    `Traffic light level` = 
-                      forcats::fct_recode(factor(as.integer(`Traffic light level`)),
+    file_path <- paste0("data/Regional_Flatsheets_Level-", level, ".xlsx")
+    sheets <-  readxl::excel_sheets(file_path)
+    if (!is.na(region)) {
+      sheet <- paste(region, paste("Level", level, sep = "-"), sep = "_")
+    } else {
+      sheet <- sheets[1]
+    }
+    skip <- ifelse(as.integer(level) == 1, 1, 0)
+    tll <- "Traffic light co-impact"
+    df <- readxl::read_excel(file_path, sheet = sheet, skip = skip) %>%
+      tidyr::fill(Transition, `Ad/Mit`, Intervention) %>%
+      dplyr::mutate(!!tll :=
+                      forcats::fct_recode(factor(as.integer(!!as.symbol(tll))),
                                           !!!unlist(matvis_vars$traffic_light_level)),
-                    `Traffic light confidence` = 
+                    `Traffic light confidence` =
                       forcats::fct_recode(factor(as.integer(`Traffic light confidence`)),
                                           !!!unlist(matvis_vars$traffic_light_confidence)))
-    cd_levels = unlist(matvis_vars$context_dependence)
+    cs_levels = unlist(matvis_vars$context_sensitivity)
     if (as.integer(level) == 2) {
-      df <- dplyr::mutate(df, `Context dependence` =
-                            forcats::fct_recode(factor(as.integer(`Context dependence`)),
-                                                !!!cd_levels),
-                          Reference = NA)
-    }
-    if (!is.na(region)) {
-      df <- dplyr::filter(df, Region == region)
+      # Workaround because SCA_Level-2 sheet uses "Context dependence"
+      cs_label = ifelse ("Context sensitivity" %in% names(df),
+                         "Context sensitivity",
+                         "Context dependence")
+      df <- try(dplyr::mutate(df,
+                              "Context sensitivity" =
+                                forcats::fct_recode(factor(as.integer(!!as.symbol(cs_label))),
+                                                    !!!cs_levels)))
+      df <- dplyr::mutate(df,
+                          Transition = case_when(
+                            Transition == "Energy System" ~ "Energy Systems",
+                            Transition == "Urban and Infrastructure System" ~
+                              "Urban and Infrastructure Systems",
+                            TRUE ~ as.character(Transition)
+                          ))
     }
     return(df)
   })
@@ -39,6 +52,65 @@ getFlatsheetData <- function(levels = 1, region = NA, simplify = TRUE) {
 }
 
 getOptions <- function(col_name) {
-  getFlatsheetData() %>%
-    dplyr::select(all_of(col_name)) %>% unlist() %>% unique() %>% sort()
+  fs_data <- getFlatsheetData()
+  if (col_name %in% names(fs_data)) {
+    options <- dplyr::select(fs_data, all_of(col_name)) %>% unlist() %>% unique() %>% sort()
+  } else if (col_name == "Region") {
+    file_path <- paste0("data/Regional_Flatsheets_Level-1.xlsx")
+    sheets <- readxl::excel_sheets(file_path)
+    options <- stringr::str_split(sheets, "_", simplify = TRUE)[,1]
+  }
+  return(options)
+}
+
+getGroupedData <- function(level, input) {
+
+  # Get flatsheet data and filter to match inputs
+  fsdata <- getFlatsheetData(level, input$region) %>%
+    dplyr::filter(Transition %in% input$transition,
+                  `Ad/Mit` %in% input$ad_mit)
+
+  # Main grouping columns
+  group_cols <- c(
+    "Transition",
+    "Ad/Mit",
+    "Intervention"
+  )
+  if (level == 2) {
+    group_cols <- c(group_cols,
+                    "Option")
+  }
+
+  # Add co-benefit categories to grouping
+  group_cols_ext <- c(group_cols, "Co-impact category")
+  nested_data <- dplyr::nest_by(fsdata, !!!syms(group_cols_ext),
+                                .key = "Co-benefits") %>%
+    tidyr::pivot_wider(names_from = `Co-impact category`,
+                       values_from = `Co-benefits`)
+
+  if (level == 2) {
+    # Group data and generate summary for context sensitivity:
+    # number of non-zero entries
+    cs_summary <- dplyr::group_by(fsdata, !!!syms(group_cols)) %>%
+      dplyr::filter(!is.na(`Context sensitivity`),
+                    `Context sensitivity` != "Unknown or no evidence") %>%
+      count(name = "Context sensitivity")
+    # Join context sensitivity summary
+    nested_data <- dplyr::left_join(nested_data, cs_summary)
+  }
+
+  # Combine intervention information
+  nested_data <- tidyr::unite(nested_data,
+                              "Intervention",
+                              `Ad/Mit`,
+                              `Intervention`,
+                              sep = ";")
+  if (level == 2) {
+    nested_data <- tidyr::unite(nested_data,
+                                "Intervention",
+                                Intervention,
+                                `Option`,
+                                sep = ": ")
+  }
+  list(title = input$region, data = nested_data, groups = group_cols_ext)
 }

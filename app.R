@@ -6,38 +6,7 @@ transitions <- getOptions("Transition")
 ad_mit <- getOptions("Ad/Mit")
 
 matvis <- function(title, level, input) {
-  group_cols <- c(
-    "Transition",
-    "Ad/Mit",
-    "Intervention - Level 1"
-  )
-  if (level == 2) {
-    group_cols <- c(group_cols,
-                    "Intervention - Level 2")
-  }
-  # Add co-benefit categories to grouping
-  group_cols <- c(group_cols, "Co-benefit category")
-  data <- getFlatsheetData(level, input$region) %>%
-    dplyr::filter(Transition %in% input$transition,
-                  `Ad/Mit` %in% input$ad_mit) %>%
-    dplyr::nest_by(!!!syms(group_cols), .key = "Co-benefits") %>%
-    tidyr::pivot_wider(names_from = `Co-benefit category`,
-                       values_from = `Co-benefits`)
-
-  # Combine intervention information
-  data <- tidyr::unite(data,
-                       "Intervention",
-                       `Ad/Mit`,
-                       `Intervention - Level 1`,
-                       sep = ";")
-  if (level == 2) {
-    data <- tidyr::unite(data,
-                         "Intervention",
-                         Intervention,
-                         `Intervention - Level 2`,
-                         sep = ": ")
-  }
-  list(title = input$region, data = data, groups = group_cols)
+  getGroupedData(level, input)
 }
 
 matvisOutput <- function(id) {

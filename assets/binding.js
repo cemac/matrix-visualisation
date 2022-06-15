@@ -26,7 +26,7 @@ let addLegend = function(node, name, cell_class, levels) {
       label_cell.innerText = key;
     }
     node.appendChild(table);
-}
+};
 
 $.extend(matVisBinding, {
   find: function(scope) {
@@ -66,17 +66,26 @@ $.extend(matVisBinding, {
         let cell = row.insertCell(-1);
         let class_names = [];
         class_names.push(row.rowIndex === 0 ? 'matvis-th' : 'matvis-td');
-        if (row.rowIndex === 0 && mvars.co_benefits.indexOf(col) !== -1) {
+        if (row.rowIndex === 0 &&
+              (mvars.co_benefits.indexOf(col) !== -1 || col === "Context sensitivity")) {
+          // Co-benefits header
           class_names.push('matvis-cb');
-          class_names.push('matvis-cb-' + col.toLowerCase())
+          class_names.push('matvis-cb-' + col.toLowerCase().replace(' ', '_'));
         }
         var entry = row.rowIndex === 0 ? col : mydata[col][row.rowIndex - 1];
-        if (typeof entry === 'string') {
+        if (entry === null) {
+          console.log(col);
+        }
+        if (typeof entry === 'string' || typeof entry === 'number') {
           const e = document.createElement("span");
           if (col === "Intervention" && row.rowIndex > 0) {
-            let s = entry.split(";")
-            class_names.push('matvis-am-' + s[0].toLowerCase());
+            let s = entry.split(";");
+            let am = s[0].split("/").join('_');
+            class_names.push('matvis-am-' + am.toLowerCase());
             entry = s[1];
+          } else if (col === "Context sensitivity" && row.rowIndex !== 0) {
+            class_names.push('matvis-cs');
+            class_names.push('matvis-cs-' + entry);
           }
           e.innerText = entry;
           cell.appendChild(e);
@@ -84,30 +93,43 @@ $.extend(matVisBinding, {
           // Use the object to construct elements for display
           class_names.push('matvis-tl');
 
-          // Traffic light level
-          let tl = entry["Traffic light level"][0];
-          class_names.push('matvis-tll-' + mvars.traffic_light_level[tl]);
+          if (entry !== null) {
+            // Traffic light level
+            let tll_label = "Traffic light level";
+            if (Object.keys(entry).indexOf(tll_label) == -1) {
+              tll_label = "Traffic light co-impact";
+            }
+            let tll = entry[tll_label][0];
+            if (tll !== null) {
+              class_names.push('matvis-tll-' + mvars.traffic_light_level[tll]);
+            }
 
-          // Traffic light confidence
-          let tlc = entry["Traffic light confidence"][0];
-          class_names.push('matvis-tlc-'+ mvars.traffic_light_confidence[tlc]);
+            // Traffic light confidence
+            let tlc = entry["Traffic light confidence"][0];
+            if (tlc !== null) {
+              class_names.push('matvis-tlc-'+ mvars.traffic_light_confidence[tlc]);
+            }
 
-          // Info to display on hover
-          let vars = [
-            "Traffic light level",
-            "Traffic light confidence",
-            "Confidence justification/ comments",
-            "Co-benefit narrative (broad findings)"
-          ];
-          let info = document.createElement("div");
-          info.className = 'matvis-info';
-          for (let i = 0; i < vars.length; i++) {
-            let span = document.createElement("span");
-            span.className = 'matvis-info-' + i;
-            span.innerText = vars[i] + ': ' + entry[vars[i]][0];
-            info.appendChild(span);
+            // Info to display on hover
+            let vars = [
+              "Traffic light co-impact",
+              "Traffic light confidence",
+              "Confidence justification",
+              "Co-impact narrative",
+              "Context sensitivity"
+            ];
+            let info = document.createElement("div");
+            info.className = 'matvis-info';
+            for (let i = 0; i < vars.length; i++) {
+              if (Object.keys(entry).indexOf(vars[i]) != -1 && entry[vars[i]][0] !== null) {
+                let span = document.createElement("span");
+                span.className = 'matvis-info-' + i;
+                span.innerText = vars[i] + ': ' + entry[vars[i]][0];
+                info.appendChild(span);
+              }
+            }
+            cell.appendChild(info);
           }
-          cell.appendChild(info);
         }
         cell.className = class_names.join(' ');
       }
@@ -140,6 +162,7 @@ $.extend(matVisBinding, {
 
     addLegend(legend, "Co-impact", "matvis-tll", mvars.traffic_light_level);
     addLegend(legend, "Confidence", "matvis-tlc", mvars.traffic_light_confidence);
+    addLegend(legend, "Context sensitivity", "matvis-cs", mvars.context_sensitivity);
   }
 });
 
