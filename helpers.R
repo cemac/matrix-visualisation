@@ -35,12 +35,24 @@ getFlatsheetData <- function(levels = 1, region = NA, simplify = TRUE) {
                               "Context sensitivity" =
                                 forcats::fct_recode(factor(as.integer(!!as.symbol(cs_label))),
                                                     !!!cs_levels)))
+      # Handle different naming across level 1 and level 2 flatsheets
       df <- dplyr::mutate(df,
                           Transition = case_when(
                             Transition == "Energy System" ~ "Energy Systems",
                             Transition == "Urban and Infrastructure System" ~
                               "Urban and Infrastructure Systems",
                             TRUE ~ as.character(Transition)
+                          ),
+                          Intervention = case_when(
+                            Intervention == "Energy supply" ~ "Energy supply / distribution",
+                            Intervention == "Energy capture/storage" ~ "Carbon capture technologies",
+                            Intervention == "Water storage, supply and water use management" ~ "Water storage, supply, and use management",
+                            Intervention == "Urban green infrastructure, land use and planning" ~ "Urban green infrastructure, land use, and planning",
+                            Intervention == "Urban green planning and land use" ~ "Urban green infrastructure, land use, and planning",
+                            Intervention == "Energy efficient infrastructure/buildings" ~ "Energy efficient infrastructure / buildings",
+                            Intervention == "Transportation" ~ "Active and electric transportation",
+                            Intervention == "Disaster risk reduction / Early warning systems" ~ "Disaster risk reduction / Early warning and response systems",
+                            TRUE ~ as.character(Intervention)
                           ))
     }
     return(df)
