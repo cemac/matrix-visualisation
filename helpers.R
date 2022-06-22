@@ -101,14 +101,25 @@ getGroupedData <- function(level, input) {
                        values_from = `Co-benefits`)
 
   if (level == 2) {
-    # Group data and generate summary for context sensitivity:
-    # number of non-zero entries
-    cs_summary <- dplyr::group_by(fsdata, !!!syms(group_cols)) %>%
-      dplyr::filter(!is.na(`Context sensitivity`),
-                    `Context sensitivity` != "Unknown or no evidence") %>%
-      count(name = "Context sensitivity")
-    # Join context sensitivity summary
-    nested_data <- dplyr::left_join(nested_data, cs_summary)
+    cs_summary_data <- fsdata
+  } else {
+    cs_summary_data <- getFlatsheetData(2, input$region) %>%
+      dplyr::filter(Transition %in% input$transition,
+                    `Ad/Mit` %in% input$ad_mit)
+  }
+  # Group data and generate summary for context sensitivity:
+  # number of non-zero entries
+  cs_summary <- dplyr::group_by(cs_summary_data, !!!syms(group_cols)) %>%
+    dplyr::filter(!is.na(`Context sensitivity`),
+                  `Context sensitivity` != "Unknown or no evidence") %>%
+    count(name = "Context sensitivity")
+
+  # Join context sensitivity summary
+  nested_data <- dplyr::left_join(nested_data, cs_summary)
+
+  if (level == 1) {
+    nested_data <- dplyr::mutate(nested_data, `Context sensitivity` =
+                                   as.character(!is.na(`Context sensitivity`) & `Context sensitivity` > 0))
   }
 
   # Combine intervention information

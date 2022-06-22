@@ -156,6 +156,13 @@
   display: none;
 }
 
+.matvis-cs-TRUE {
+  background-image: url("./img/icons/context_sensitivity.png");
+  background-size: 50%;
+  background-position: center center;
+  background-repeat: no-repeat;
+}
+
 /* Adaptation/mitigation */
 .matvis-am-a::before, .matvis-am-m::before, .matvis-am-a_m::before {
   font-weight: bold;
