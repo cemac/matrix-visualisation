@@ -1,12 +1,14 @@
 .matvis {
   text-align: center;
-  border-left: 6px solid #073b4c;
   padding: 1em;
+  border: 1px solid #ddd;
+  border-width: 0 1px;
 }
 
 .matvis-title {
   text-transform: uppercase;
   text-align: left;
+  color: #666666;
 }
 
 .matvis-value {
@@ -212,6 +214,10 @@
   display: block;
 }
 
+.matvis-about {
+  text-align: left;
+}
+
 section p {
   max-width: 55em;
 }
@@ -219,5 +225,5 @@ section p {
 .toc {
   list-style: none;
   margin: 10px 0;
-  padding: 10px 15px;
+  padding: 10px 0px;
 }
