@@ -162,7 +162,15 @@ $.extend(matVisBinding, {
 
     addLegend(legend, "Co-impact", "matvis-tll", mvars.traffic_light_level);
     addLegend(legend, "Confidence", "matvis-tlc", mvars.traffic_light_confidence);
-    addLegend(legend, "Context sensitivity", "matvis-cs", mvars.context_sensitivity);
+
+    // Select context sensitivity legend based on tab panel title
+    let active_panel = document.getElementsByClassName("tab-pane active")[0];
+    let panel_title = active_panel.getAttribute("data-value");
+    if (panel_title == "Level 1") {
+      addLegend(legend, "Context sensitivity", "matvis-cs", mvars.cs_summary);
+    } else {
+      addLegend(legend, "Context sensitivity", "matvis-cs", mvars.context_sensitivity);
+    }
   }
 });
 

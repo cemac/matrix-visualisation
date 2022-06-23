@@ -18,6 +18,10 @@
     "Moderate context sensitivity": "2",
     "High context sensitivity": "3"
   },
+    "cs_summary": {
+    "Unknown or no evidence": "FALSE",
+    "Evidence for context sensitivity": "TRUE"
+  },
   "transition": {
     "Energy Systems": "0",
     "Land, Ocean and Ecosystems": "1",

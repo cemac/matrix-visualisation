@@ -34,6 +34,8 @@
 .matvis-legend-key.matvis-tlc-3::before,
 .matvis-legend-key.matvis-tlc-4::before { top: 3px; }
 
+.matvis-legend-key.matvis-cs-TRUE { padding-top: 7px; padding-bottom: 5px; }
+
 .matvis-table {
   border-spacing: 5px;
   border-collapse: separate;
