@@ -166,7 +166,9 @@
 }
 
 /* Adaptation/mitigation */
-.matvis-am-a::before, .matvis-am-m::before, .matvis-am-a_m::before {
+.matvis-am-adaptation::before,
+.matvis-am-mitigation::before,
+.matvis-am-adaptation_mitigation::before {
   font-weight: bold;
   display: inline-block;
   height: 1.6em;
@@ -178,9 +180,9 @@
   background-color: #737373; /* dark grey */
   color: #ffffff;
 }
-.matvis-am-a::before { content: "A";}
-.matvis-am-m::before { content: "M";}
-.matvis-am-a_m::before { width: 2.8em; content: "A/M";}
+.matvis-am-adaptation::before { content: "A";}
+.matvis-am-mitigation::before { content: "M";}
+.matvis-am-adaptation_mitigation::before { width: 2.8em; content: "A/M";}
 
 /* Contextual information */
 .matvis-info {

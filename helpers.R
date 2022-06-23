@@ -24,7 +24,10 @@ getFlatsheetData <- function(levels = 1, region = NA, simplify = TRUE) {
                                           !!!unlist(matvis_vars$traffic_light_level)),
                     `Traffic light confidence` =
                       forcats::fct_recode(factor(as.integer(`Traffic light confidence`)),
-                                          !!!unlist(matvis_vars$traffic_light_confidence)))
+                                          !!!unlist(matvis_vars$traffic_light_confidence)),
+                    `Ad/Mit` =
+                      forcats::fct_recode(factor(`Ad/Mit`),
+                                          !!!unlist(matvis_vars$adaptation_mitigation)))
     cs_levels = unlist(matvis_vars$context_sensitivity)
     if (as.integer(level) == 2) {
       # Workaround because SCA_Level-2 sheet uses "Context dependence"
