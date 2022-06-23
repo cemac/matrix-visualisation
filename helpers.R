@@ -141,7 +141,8 @@ getGroupedData <- function(level, input) {
                                 "Intervention",
                                 Intervention,
                                 `Option`,
-                                sep = ": ")
+                                sep = ": ",
+                                na.rm = TRUE)
   }
   list(title = input$region, data = nested_data, groups = group_cols_ext)
 }
