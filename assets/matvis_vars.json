@@ -39,5 +39,13 @@
     "Adaptation": "A",
     "Mitigation": "M",
     "Adaptation/Mitigation": "A/M"
+  },
+  "region": {
+    "Africa": "Africa",
+    "Asia": "Asia",
+    "Europe": "Europe",
+    "North America": "North America",
+    "Oceania": "Oceania",
+    "South & Central America": "SCA"
   }
 }

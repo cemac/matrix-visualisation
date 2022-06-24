@@ -4,6 +4,9 @@ source("helpers.R")
 regions <- getOptions("Region")
 transitions <- getOptions("Transition")
 ad_mit <- getOptions("Ad/Mit")
+tll <- getOptions("Traffic light co-impact")
+tlc <- getOptions("Traffic light confidence")
+cs <- getOptions("Context sensitivity")
 
 matvis <- function(title, level, input) {
   getGroupedData(level, input)
@@ -50,22 +53,40 @@ ui <- fluidPage(
              of Climate Mitigation and Adaptation Options"),
   
   fluidRow(
-    column(4,
+    column(2,
            selectInput("region",
                        "Region",
                        regions)
     ),
-    column(4,
+    column(2,
            checkboxGroupInput("transition",
                               label = "Transition",
                               choices = transitions,
                               selected = transitions)
     ),
-    column(4,
+    column(2,
            checkboxGroupInput("ad_mit",
                               label = "Adaptation/Mitigation",
                               choices = ad_mit,
                               selected = ad_mit)
+    ),
+    column(2,
+           checkboxGroupInput("tll",
+                              label = "Evidence level",
+                              choices = tll,
+                              selected = tll)
+    ),
+    column(2,
+           checkboxGroupInput("tlc",
+                              label = "Confidence",
+                              choices = tlc,
+                              selected = tlc)
+    ),
+    column(2,
+           checkboxGroupInput("cs",
+                              label = "Context sensitivity",
+                              choices = cs,
+                              selected = cs)
     )
   ),
   

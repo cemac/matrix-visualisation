@@ -67,23 +67,37 @@ getFlatsheetData <- function(levels = 1, region = NA, simplify = TRUE) {
 }
 
 getOptions <- function(col_name) {
-  fs_data <- getFlatsheetData()
+  level = ifelse(col_name == "Context sensitivity", 2, 1)
+  fs_data <- getFlatsheetData(level)
   if (col_name %in% names(fs_data)) {
     options <- dplyr::select(fs_data, all_of(col_name)) %>% unlist() %>% unique() %>% sort()
   } else if (col_name == "Region") {
     file_path <- paste0("data/Regional_Flatsheets_Level-1.xlsx")
     sheets <- readxl::excel_sheets(file_path)
     options <- stringr::str_split(sheets, "_", simplify = TRUE)[,1]
+    options <- matvis_vars$region[matvis_vars$region %in% options]
   }
   return(options)
+}
+
+filterData <- function(level, input) {
+  # Get flatsheet data and filter to match inputs
+  fdata <- getFlatsheetData(level, input$region) %>%
+    dplyr::filter(Transition %in% input$transition,
+                  `Ad/Mit` %in% input$ad_mit,
+                  `Traffic light co-impact` %in% input$tll,
+                  `Traffic light confidence` %in% input$tlc)
+  # Context sensitivity - YAH need to calculate summary for level 1?
+  if (level == 2) {
+    fdata <- dplyr::filter(fdata, `Context sensitivity` %in% input$cs)
+  }
+  return(fdata)
 }
 
 getGroupedData <- function(level, input) {
 
   # Get flatsheet data and filter to match inputs
-  fsdata <- getFlatsheetData(level, input$region) %>%
-    dplyr::filter(Transition %in% input$transition,
-                  `Ad/Mit` %in% input$ad_mit)
+  fsdata <- filterData(level, input)
 
   # Main grouping columns
   group_cols <- c(
@@ -104,13 +118,19 @@ getGroupedData <- function(level, input) {
   fsdata <- dplyr::right_join(fsdata, evidence_summary) %>%
     dplyr::select(-evidence_count)
 
-  # Add co-benefit categories to grouping
+  # Add co-impact categories to grouping
   group_cols_ext <- c(group_cols, "Co-impact category")
+
+  # Nest co-impact info then pivot to produce co-impact columns, with a
+  # specified order
   nested_data <- dplyr::nest_by(fsdata, !!!syms(group_cols_ext),
                                 .key = "Co-benefits") %>%
     tidyr::pivot_wider(names_from = `Co-impact category`,
-                       values_from = `Co-benefits`)
+                       values_from = `Co-benefits`) %>%
+    dplyr::relocate(any_of(matvis_vars$co_benefits),
+                    .after = matches(group_cols[-1]))
 
+  # Select data for context sensitivity summary
   if (level == 2) {
     cs_summary_data <- fsdata
   } else {
@@ -147,5 +167,6 @@ getGroupedData <- function(level, input) {
                                 sep = ": ",
                                 na.rm = TRUE)
   }
-  list(title = input$region, data = nested_data, groups = group_cols_ext)
+  list(title = names(matvis_vars$region[matvis_vars$region == input$region]),
+       data = nested_data, groups = group_cols_ext)
 }
