@@ -91,8 +91,11 @@ $.extend(matVisBinding, {
           cell.appendChild(e);
         } else {
           // Use the object to construct elements for display
-          class_names.push('matvis-tl');
-
+          if (col === "Context sensitivity" && row.rowIndex !== 0) {
+            class_names.push('matvis-cs');
+          } else {
+            class_names.push('matvis-tl');
+          }
           if (entry !== null) {
             // Traffic light level
             let tll_label = "Traffic light level";
