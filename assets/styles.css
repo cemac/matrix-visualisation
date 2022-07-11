@@ -38,6 +38,8 @@
 
 .matvis-legend-key.matvis-cs-TRUE { padding-top: 5px; }
 
+.matvis-legend .matvis-cs { background-size: 30%; }
+
 .matvis-table {
   border-spacing: 5px;
   border-collapse: separate;
@@ -124,9 +126,12 @@
 }
 
 /* Results cells */
-.matvis-tl, .matvis-cs {
+.matvis-tl {
   width: 6em;
 }
+
+/* Adjust position of traffic light level indicator when showing context sensitivity */
+.matvis-cs::before { position: relative; top: 0.4em; }
 
 /* Traffic light level */
 .matvis-table .matvis-tll-0 { background-color: #e7edeb; } /* grey */
@@ -148,19 +153,16 @@
 .matvis-tlc-4::before { font-size: 1.9em; }
 
 /* Context sensitivity */
-.matvis-cs-1::before { content: "\25a0"; } /* square */
-.matvis-cs-2::before { content: "\25a0 \25a0"; } /* 2 squares */
-.matvis-cs-3::before { content: "\25a0 \25a0 \25a0"; } /* 3 squares */
-.matvis-cs-4::before { content: "\25a0 \25a0 \25a0 \25a0" } /* 4 squares */
-.matvis-cs-5::before { content: "\25a0 \25a0 \25a0 \25a0 \25a0" } /* 5 squares */
-
-.matvis-cs::before { font-size: 1.2em; }
+.matvis-cs {
+  background-size: 25%;
+  background-position: center 0.3em;
+  background-repeat: no-repeat;
+}
+.matvis-cs-1 { background-image: url("./img/icons/context_sensitivity_LOW.png"); }
+.matvis-cs-2 { background-image: url("./img/icons/context_sensitivity_MEDIUM.png"); }
+.matvis-cs-3 { background-image: url("./img/icons/context_sensitivity_HIGH.png"); }
 
 .matvis-cs-TRUE::before { content: "\00a0"; font-size: 1.9em; } /* space */
-
-.matvis-cs span {
-  display: none;
-}
 
 .matvis-cs-TRUE {
   background-image: url("./img/icons/context_sensitivity.png");

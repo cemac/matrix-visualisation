@@ -18,7 +18,7 @@ let addLegend = function(node, name, cell_class, levels) {
       let class_names = [];
       class_names.push('matvis-td');
       class_names.push('matvis-legend-key');
-      class_names.push(cell_class + '-' + levels[key]);
+      class_names.push(cell_class, cell_class + '-' + levels[key]);
       cell.className = class_names.join(' ');
 
       let label_cell = row.insertCell(-1);
@@ -84,8 +84,7 @@ $.extend(matVisBinding, {
             class_names.push('matvis-am-' + am.toLowerCase());
             entry = s[1];
           } else if (col === "Context sensitivity" && row.rowIndex !== 0) {
-            class_names.push('matvis-cs');
-            class_names.push('matvis-cs-' + entry);
+            class_names.push('matvis-cs', 'matvis-cs-' + entry);
           }
           e.innerText = entry;
           cell.appendChild(e);
@@ -111,6 +110,16 @@ $.extend(matVisBinding, {
             let tlc = entry["Traffic light confidence"][0];
             if (tlc !== null) {
               class_names.push('matvis-tlc-'+ mvars.traffic_light_confidence[tlc]);
+            }
+
+            // Context sensitivity
+            let cs_label = "Context sensitivity";
+            console.log(Object.keys(entry).indexOf(cs_label));
+            if (Object.keys(entry).indexOf(cs_label) > -1) {
+              let cs = entry[cs_label][0];
+              if (cs !== null) {
+                class_names.push('matvis-cs matvis-cs-' + mvars.context_sensitivity[cs]);
+              }
             }
 
             // Info to display on hover
@@ -169,9 +178,7 @@ $.extend(matVisBinding, {
     // Select context sensitivity legend based on tab panel title
     let active_panel = document.getElementsByClassName("tab-pane active")[0];
     let panel_title = active_panel.getAttribute("data-value");
-    if (panel_title == "Level 1") {
-      addLegend(legend, "Context sensitivity", "matvis-cs", mvars.cs_summary);
-    } else {
+    if (panel_title == "Level 2") {
       addLegend(legend, "Context sensitivity", "matvis-cs", mvars.context_sensitivity);
     }
   }
