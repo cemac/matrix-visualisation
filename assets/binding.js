@@ -103,7 +103,7 @@ $.extend(matVisBinding, {
             }
             let tll = entry[tll_label][0];
             if (tll !== null) {
-              class_names.push('matvis-tll-' + mvars.traffic_light_level[tll]);
+              class_names.push('matvis-tll-' + mvars.traffic_light_co_impact[tll]);
             }
 
             // Traffic light confidence
@@ -172,7 +172,7 @@ $.extend(matVisBinding, {
     legend_header.innerText = 'Key';
     legend.replaceChildren(legend_header);
 
-    addLegend(legend, "Co-impact", "matvis-tll", mvars.traffic_light_level);
+    addLegend(legend, "Potential for trade-offs or co-benefits", "matvis-tll", mvars.traffic_light_co_impact);
     addLegend(legend, "Confidence", "matvis-tlc", mvars.traffic_light_confidence);
 
     // Select context sensitivity legend based on tab panel title

@@ -72,7 +72,7 @@ ui <- fluidPage(
     ),
     column(2,
            checkboxGroupInput("tll",
-                              label = "Evidence level",
+                              label = "Potential for trade-offs or co-benefits",
                               choices = tll,
                               selected = tll)
     ),

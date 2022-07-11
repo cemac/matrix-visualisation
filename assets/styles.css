@@ -159,8 +159,7 @@
   background-repeat: no-repeat;
 }
 .matvis-cs-1 { background-image: url("./img/icons/context_sensitivity_LOW.png"); }
-.matvis-cs-2 { background-image: url("./img/icons/context_sensitivity_MEDIUM.png"); }
-.matvis-cs-3 { background-image: url("./img/icons/context_sensitivity_HIGH.png"); }
+.matvis-cs-2 { background-image: url("./img/icons/context_sensitivity_HIGH.png"); }
 
 .matvis-cs-TRUE::before { content: "\00a0"; font-size: 1.9em; } /* space */
 
