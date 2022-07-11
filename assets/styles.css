@@ -222,6 +222,10 @@
   text-align: left;
 }
 
+h2 + h3 {
+  margin: 10px 0 20px;
+}
+
 section p {
   max-width: 55em;
 }
