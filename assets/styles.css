@@ -19,6 +19,12 @@
   float: right;
 }
 
+.matvis-legend h4 {
+  font-size: 1em;
+  font-weight: bold;
+}
+
+
 .matvis-legend-key {
   line-height: 1.4em;
   width: 4.5em;
@@ -39,6 +45,10 @@
 .matvis-legend-key.matvis-cs-TRUE { padding-top: 5px; }
 
 .matvis-legend .matvis-cs { background-size: 30%; }
+
+.matvis-legend .matvis-table { width: 100%; }
+
+.matvis-legend-label { text-align: left; padding-left: 1px; }
 
 .matvis-table {
   border-spacing: 5px;
