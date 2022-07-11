@@ -51,7 +51,9 @@ ui <- fluidPage(
   # Application title
   titlePanel("Co-benefits and Trade-offs of Climate Mitigation and Adaptation"),
   h3("Global and Regional Assessment"),
-  
+
+  helpText(htmlTemplate("static/banner.html")),
+
   fluidRow(
     column(2,
            selectInput("region",

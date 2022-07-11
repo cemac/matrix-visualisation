@@ -5,6 +5,13 @@
   border-width: 0 1px;
 }
 
+.matvis-banner {
+  border: 1px solid #9b9;
+  background: #9e9;
+  color: #333;
+  text-align: left;
+}
+
 .matvis-title {
   text-transform: uppercase;
   text-align: left;
@@ -243,4 +250,8 @@ section p {
   list-style: none;
   margin: 10px 0;
   padding: 10px 0px;
+}
+
+.notify {
+  font-size: 1.3em;
 }
