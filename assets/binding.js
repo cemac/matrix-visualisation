@@ -181,9 +181,7 @@ $.extend(matVisBinding, {
     // Select context sensitivity legend based on tab panel title
     let active_panel = document.getElementsByClassName("tab-pane active")[0];
     let panel_title = active_panel.getAttribute("data-value");
-    if (panel_title == "Level 2") {
-      addLegend(legend, "Context sensitivity", "matvis-cs", mvars.context_sensitivity);
-    }
+    addLegend(legend, "Context sensitivity", "matvis-cs", mvars.context_sensitivity);
   }
 });
 
