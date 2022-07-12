@@ -247,6 +247,10 @@
   display: block;
 }
 
+.matvis-footer {
+  clear: both;
+}
+
 .matvis-about {
   text-align: left;
 }
