@@ -111,7 +111,7 @@ getGroupedData <- function(level, input) {
 
   # Filter out rows where evidence is lacking across all co-benefit categories
   evidence_summary <- dplyr::group_by(fs_data, !!!syms(group_cols)) %>%
-    dplyr::filter(`Traffic light co-impact` != "Limited or no evidence") %>%
+    dplyr::filter(`Traffic light co-impact` != names(matvis_vars$traffic_light_co_impact)[1]) %>%
     dplyr::summarise(evidence_count = n())
 
   fs_data <- dplyr::right_join(fs_data, evidence_summary) %>%
