@@ -18,6 +18,7 @@ getFlatsheetData <- function(levels = 1, region = NA, simplify = TRUE) {
     skip <- ifelse(as.integer(level) == 1, 1, 0)
     tll <- "Traffic light co-impact"
     df <- readxl::read_excel(file_path, sheet = sheet, skip = skip) %>%
+      dplyr::mutate(Level = level) %>%
       tidyr::fill(Transition, `Ad/Mit`, Intervention) %>%
       dplyr::mutate(!!tll :=
                       forcats::fct_recode(factor(as.integer(!!as.symbol(tll))),
@@ -60,8 +61,8 @@ getFlatsheetData <- function(levels = 1, region = NA, simplify = TRUE) {
     }
     return(df)
   })
-  if (simplify && length(rtn) == 1) {
-    return(rtn[[1]])
+  if (simplify) {
+    return(bind_rows(rtn))
   }
   return(rtn)
 }
@@ -86,36 +87,34 @@ filterData <- function(level, input) {
     dplyr::filter(Transition %in% input$transition,
                   `Ad/Mit` %in% input$ad_mit,
                   `Traffic light co-impact` %in% input$tll,
-                  `Traffic light confidence` %in% input$tlc)
-  # Context sensitivity - YAH need to calculate summary for level 1?
-  if (level == 2) {
-    fdata <- dplyr::filter(fdata, `Context sensitivity` %in% input$cs)
-  }
+                  `Traffic light confidence` %in% input$tlc,
+                  Level == 1 || `Context sensitivity` %in% input$cs)
   return(fdata)
 }
 
 getGroupedData <- function(level, input) {
 
   # Get flatsheet data and filter to match inputs
-  fsdata <- filterData(level, input)
+  fs_data <- filterData(level, input)
 
   # Main grouping columns
   group_cols <- c(
     "Transition",
     "Ad/Mit",
-    "Intervention"
+    "Intervention",
+    "Level"
   )
-  if (level == 2) {
+  if ("Option" %in% names(fs_data)) {
     group_cols <- c(group_cols,
                     "Option")
   }
 
   # Filter out rows where evidence is lacking across all co-benefit categories
-  evidence_summary <- dplyr::group_by(fsdata, !!!syms(group_cols)) %>%
+  evidence_summary <- dplyr::group_by(fs_data, !!!syms(group_cols)) %>%
     dplyr::filter(`Traffic light co-impact` != "Limited or no evidence") %>%
     dplyr::summarise(evidence_count = n())
 
-  fsdata <- dplyr::right_join(fsdata, evidence_summary) %>%
+  fs_data <- dplyr::right_join(fs_data, evidence_summary) %>%
     dplyr::select(-evidence_count)
 
   # Add co-impact categories to grouping
@@ -123,36 +122,26 @@ getGroupedData <- function(level, input) {
 
   # Nest co-impact info then pivot to produce co-impact columns, with a
   # specified order
-  nested_data <- dplyr::nest_by(fsdata, !!!syms(group_cols_ext),
+  nested_data <- dplyr::nest_by(fs_data, !!!syms(group_cols_ext),
                                 .key = "Co-benefits") %>%
     tidyr::pivot_wider(names_from = `Co-impact category`,
                        values_from = `Co-benefits`) %>%
     dplyr::relocate(any_of(matvis_vars$co_benefits),
                     .after = matches(group_cols[-1]))
 
-  # Select data for context sensitivity summary
-  if (level == 2) {
-    cs_summary_data <- fsdata
-  } else {
-    cs_summary_data <- getFlatsheetData(2, input$region) %>%
-      dplyr::filter(Transition %in% input$transition,
-                    `Ad/Mit` %in% input$ad_mit)
-  }
-
   # Combine intervention information
-  nested_data <- tidyr::unite(nested_data,
-                              "Intervention",
-                              `Ad/Mit`,
-                              `Intervention`,
-                              sep = ";")
-  if (level == 2) {
-    nested_data <- tidyr::unite(nested_data,
-                                "Intervention",
-                                Intervention,
-                                `Option`,
-                                sep = ": ",
-                                na.rm = TRUE)
-  }
+  nested_data <- dplyr::group_by(nested_data,
+                                 Transition,
+                                 Intervention,
+                                 Level,
+                                 `Ad/Mit`) %>%
+    dplyr::mutate(Intervention = ifelse(Level == 1, Intervention, Option)) %>%
+    dplyr::select(-any_of(c("Option"))) %>%
+    tidyr::unite("Intervention",
+                 `Ad/Mit`,
+                 `Intervention`,
+                 sep = ";")
+
   list(title = names(matvis_vars$region[matvis_vars$region == input$region]),
        data = nested_data, groups = group_cols_ext)
 }

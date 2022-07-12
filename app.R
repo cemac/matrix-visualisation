@@ -95,6 +95,7 @@ ui <- fluidPage(
   tabsetPanel(
     tabPanel("Level 1", matvisOutput("level1")),
     tabPanel("Level 2", matvisOutput("level2")),
+    tabPanel("Combined", matvisOutput("combined")),
     tabPanel("About", htmlTemplate("static/about.html"))
   )
 )
@@ -106,6 +107,10 @@ server <- function(input, output){
 
   output$level2 <- renderMatvis({
     matvis("Level 2", 2, input = input)
+  })
+
+  output$combined <- renderMatvis({
+    matvis("Combined", 1:2, input = input)
   })
 }
 

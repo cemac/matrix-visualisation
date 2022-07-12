@@ -147,6 +147,18 @@
   width: 6em;
 }
 
+/* Intervention */
+.matvis-intervention {
+  text-align: left;
+  padding-left: 0.6em;
+}
+.matvis-level-1 {
+  font-weight: bold;
+}
+.matvis-level-2 {
+  padding-left: 2.4em;
+}
+
 /* Adjust position of traffic light level indicator when showing context sensitivity */
 .matvis-cs::before { position: relative; top: 0.4em; }
 
@@ -201,6 +213,7 @@
   border-radius: 1em;
   background-color: #737373; /* dark grey */
   color: #ffffff;
+  text-align: center;
 }
 .matvis-am-adaptation::before { content: "A";}
 .matvis-am-mitigation::before { content: "M";}

@@ -55,14 +55,17 @@ $.extend(matVisBinding, {
     let groups = [];
     for (let i = 0; i < nrow + 1; i++) {
       let row = table.insertRow(-1);
+      let level = mydata["Level"][row.rowIndex - 1];
       if (row.rowIndex !== 0) {
         let key = mydata[Object.keys(mydata)[0]][row.rowIndex - 1];
         row.className = 'matvis-table-group-' + mvars.transition[key];
         if (groups.indexOf(row.className) === -1) {
           groups.push(row.className);
         }
+        row.className += ' matvis-table-level-' + level;
       }
       for (let col of Object.keys(mydata)) {
+        if (col === 'Level') continue;
         let cell = row.insertCell(-1);
         let class_names = [];
         class_names.push(row.rowIndex === 0 ? 'matvis-th' : 'matvis-td');
@@ -79,6 +82,7 @@ $.extend(matVisBinding, {
         if (typeof entry === 'string' || typeof entry === 'number') {
           const e = document.createElement("span");
           if (col === "Intervention" && row.rowIndex > 0) {
+            class_names.push('matvis-intervention', 'matvis-level-' + level);
             let s = entry.split(";");
             let am = s[0].split("/").join('_');
             class_names.push('matvis-am-' + am.toLowerCase());
@@ -114,7 +118,6 @@ $.extend(matVisBinding, {
 
             // Context sensitivity
             let cs_label = "Context sensitivity";
-            console.log(Object.keys(entry).indexOf(cs_label));
             if (Object.keys(entry).indexOf(cs_label) > -1) {
               let cs = entry[cs_label][0];
               if (cs !== null) {
