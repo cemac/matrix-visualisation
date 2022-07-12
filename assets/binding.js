@@ -171,9 +171,6 @@ $.extend(matVisBinding, {
     // insert the legend
     let legend_id = el.id + '-matvis-legend';
     let legend = document.getElementById(legend_id);
-    let legend_header = document.createElement("h3");
-    legend_header.innerText = 'Key';
-    legend.replaceChildren(legend_header);
 
     addLegend(legend, "Potential for trade-offs or co-benefits", "matvis-tll", mvars.traffic_light_co_impact);
     addLegend(legend, "Confidence", "matvis-tlc", mvars.traffic_light_confidence);
