@@ -69,6 +69,7 @@
 
 .matvis-th {
   font-weight: bold;
+  font-size: 1.1em;
   background-color: #99acff; /* violet */
 }
 
@@ -124,6 +125,7 @@
   transform: rotate(270deg);
   padding: 0 0.5em;
   width: min-content;
+  font-size: 1.1em;
 }
 
 .matvis-table-group-0 td:not(.matvis-tl) {
@@ -154,6 +156,7 @@
 }
 .matvis-level-1 {
   font-weight: bold;
+  font-size: 1.1em;
 }
 .matvis-level-2 {
   padding-left: 2.4em;
