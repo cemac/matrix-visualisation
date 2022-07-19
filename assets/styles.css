@@ -1,12 +1,21 @@
 .matvis {
   text-align: center;
-  border-left: 6px solid #073b4c;
   padding: 1em;
+  border: 1px solid #ddd;
+  border-width: 0 1px;
+}
+
+.matvis-banner {
+  border: 1px solid #9b9;
+  background: #9e9;
+  color: #333;
+  text-align: left;
 }
 
 .matvis-title {
   text-transform: uppercase;
   text-align: left;
+  color: #666666;
 }
 
 .matvis-value {
@@ -16,6 +25,12 @@
 .matvis-legend {
   float: right;
 }
+
+.matvis-legend h4 {
+  font-size: 1em;
+  font-weight: bold;
+}
+
 
 .matvis-legend-key {
   line-height: 1.4em;
@@ -34,6 +49,14 @@
 .matvis-legend-key.matvis-tlc-3::before,
 .matvis-legend-key.matvis-tlc-4::before { top: 3px; }
 
+.matvis-legend-key.matvis-cs-TRUE { padding-top: 5px; }
+
+.matvis-legend .matvis-cs { background-size: 30%; }
+
+.matvis-legend .matvis-table { width: 100%; }
+
+.matvis-legend-label { text-align: left; padding-left: 1px; }
+
 .matvis-table {
   border-spacing: 5px;
   border-collapse: separate;
@@ -46,6 +69,7 @@
 
 .matvis-th {
   font-weight: bold;
+  font-size: 1.1em;
   background-color: #99acff; /* violet */
 }
 
@@ -73,6 +97,9 @@
 .matvis-cb-socio-cultural {
   background-image: url("./img/icons/socio-cultural.png");
 }
+.matvis-cb-context_sensitivity {
+  background-image: url("./img/icons/context_sensitivity.png");
+}
 
 .matvis-cb span {
   display: block;
@@ -80,6 +107,11 @@
   padding: 1em 0;
   position: relative;
   top: -5em;
+}
+
+.matvis-cb-context_sensitivity span {
+  transform: none;
+  top: -4.2em;
 }
 
 .matvis-table .matvis-th:first-child {
@@ -93,21 +125,22 @@
   transform: rotate(270deg);
   padding: 0 0.5em;
   width: min-content;
+  font-size: 1.1em;
 }
 
-.matvis-table-group-0 td {
-  background-color: #cdd6ff; /* lavander */
+.matvis-table-group-0 td:not(.matvis-tl) {
+  background-color: #cdd6ff; /* lavender */
 }
 
-.matvis-table-group-1 td {
+.matvis-table-group-1 td:not(.matvis-tl) {
   background-color: #ded3f8; /* lilac */
 }
 
-.matvis-table-group-2 td {
+.matvis-table-group-2 td:not(.matvis-tl) {
   background-color: #cfdfc4; /* pale green */
 }
 
-.matvis-table-group-3 td {
+.matvis-table-group-3 td:not(.matvis-tl) {
   background-color: #fff0b6; /* primrose */
 }
 
@@ -116,6 +149,22 @@
   width: 6em;
 }
 
+/* Intervention */
+.matvis-intervention {
+  text-align: left;
+  padding-left: 0.6em;
+}
+.matvis-level-1 {
+  font-weight: bold;
+  font-size: 1.1em;
+}
+.matvis-level-2 {
+  padding-left: 2.4em;
+}
+
+/* Adjust position of traffic light level indicator when showing context sensitivity */
+.matvis-cs::before { position: relative; top: 0.4em; }
+
 /* Traffic light level */
 .matvis-table .matvis-tll-0 { background-color: #e7edeb; } /* grey */
 .matvis-table .matvis-tll-1 { background-color: #f90334; } /* red */
@@ -123,7 +172,7 @@
 .matvis-table .matvis-tll-3 { background-color: #80cc28; } /* green */
 
 /* Traffic light confidence */
-.matvis-tlc-0::before { content: "\00a0"; } /* grey */
+.matvis-tlc-0::before { content: "\00a0"; } /* space */
 .matvis-tlc-1::before { content: "\25cb"; } /* open circle */
 .matvis-tlc-2::before { content: "\2022"; } /* bullet */
 .matvis-tlc-3::before { content: "\2022 \2022"; } /* 2 bullets */
@@ -135,8 +184,28 @@
 .matvis-tlc-3::before,
 .matvis-tlc-4::before { font-size: 1.9em; }
 
+/* Context sensitivity */
+.matvis-cs {
+  background-size: 25%;
+  background-position: center 0.3em;
+  background-repeat: no-repeat;
+}
+.matvis-cs-1 { background-image: url("./img/icons/context_sensitivity_LOW.png"); }
+.matvis-cs-2 { background-image: url("./img/icons/context_sensitivity_HIGH.png"); }
+
+.matvis-cs-TRUE::before { content: "\00a0"; font-size: 1.9em; } /* space */
+
+.matvis-cs-TRUE {
+  background-image: url("./img/icons/context_sensitivity.png");
+  background-size: 50%;
+  background-position: center center;
+  background-repeat: no-repeat;
+}
+
 /* Adaptation/mitigation */
-.matvis-am-adaptation::before, .matvis-am-mitigation::before {
+.matvis-am-adaptation::before,
+.matvis-am-mitigation::before,
+.matvis-am-adaptation_mitigation::before {
   font-weight: bold;
   display: inline-block;
   height: 1.6em;
@@ -147,9 +216,11 @@
   border-radius: 1em;
   background-color: #737373; /* dark grey */
   color: #ffffff;
+  text-align: center;
 }
 .matvis-am-adaptation::before { content: "A";}
 .matvis-am-mitigation::before { content: "M";}
+.matvis-am-adaptation_mitigation::before { width: 2.8em; content: "A/M";}
 
 /* Contextual information */
 .matvis-info {
@@ -158,12 +229,13 @@
   right: 1em;
   top: 1em;
   z-index: 10;
-  width: 12em;
+  width: 24em;
   border: 1px solid black;
   padding: 0.5em;
   /*background-color: #ffffff;*/
   background-color: inherit;
   opacity: 0.9;
+  text-align: left;
 }
 
 .matvis-info span {
@@ -176,4 +248,30 @@
 
 .matvis-td:hover .matvis-info {
   display: block;
+}
+
+.matvis-footer {
+  clear: both;
+}
+
+.matvis-about {
+  text-align: left;
+}
+
+h2 + h3 {
+  margin: 10px 0 20px;
+}
+
+section p {
+  max-width: 55em;
+}
+
+.toc {
+  list-style: none;
+  margin: 10px 0;
+  padding: 10px 0px;
+}
+
+.notify {
+  font-size: 1.3em;
 }

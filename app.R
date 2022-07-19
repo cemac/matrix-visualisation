@@ -4,40 +4,12 @@ source("helpers.R")
 regions <- getOptions("Region")
 transitions <- getOptions("Transition")
 ad_mit <- getOptions("Ad/Mit")
+tll <- getOptions("Traffic light co-impact")
+tlc <- getOptions("Traffic light confidence")
+cs <- getOptions("Context sensitivity")
 
 matvis <- function(title, level, input) {
-  group_cols <- c(
-    "Transition",
-    "Ad/Mit",
-    "Intervention - Level 1"
-  )
-  if (level == 2) {
-    group_cols <- c(group_cols,
-                    "Intervention - Level 2")
-  }
-  # Add co-benefit categories to grouping
-  group_cols <- c(group_cols, "Co-benefit category")
-  data <- getFlatsheetData(level, input$region) %>%
-    dplyr::filter(Transition %in% input$transition,
-                  `Ad/Mit` %in% input$ad_mit) %>%
-    dplyr::nest_by(!!!syms(group_cols), .key = "Co-benefits") %>%
-    tidyr::pivot_wider(names_from = `Co-benefit category`,
-                       values_from = `Co-benefits`)
-
-  # Combine intervention information
-  data <- tidyr::unite(data,
-                       "Intervention",
-                       `Ad/Mit`,
-                       `Intervention - Level 1`,
-                       sep = ";")
-  if (level == 2) {
-    data <- tidyr::unite(data,
-                         "Intervention",
-                         Intervention,
-                         `Intervention - Level 2`,
-                         sep = ": ")
-  }
-  list(title = input$region, data = data, groups = group_cols)
+  getGroupedData(level, input)
 }
 
 matvisOutput <- function(id) {
@@ -46,7 +18,8 @@ matvisOutput <- function(id) {
     h1(id = sprintf("%s-matvis-title", id), class = "matvis-title"),
     p(id = sprintf("%s-matvis-desc", id), class = "matvis-desc"),
     shiny::tags$div(id = sprintf("%s-matvis-legend", id), class = "matvis-legend"),
-    shiny::tags$div(id = sprintf("%s-matvis-table", id))
+    shiny::tags$div(id = sprintf("%s-matvis-table", id)),
+    shiny::tags$div(class = "matvis-footer")
   )
   
   path <- normalizePath("assets")
@@ -77,32 +50,54 @@ renderMatvis <- function(expr, env = parent.frame(),
 ui <- fluidPage(
   
   # Application title
-  titlePanel("Assessment of Global and Regional Co-benefits and Trade-offs
-             of Climate Mitigation and Adaptation Options"),
-  
+  titlePanel("Co-benefits and Trade-offs of Climate Mitigation and Adaptation"),
+  h3("Global and Regional Assessment"),
+
+  helpText(htmlTemplate("static/banner.html")),
+
   fluidRow(
-    column(4,
+    column(2,
            selectInput("region",
                        "Region",
                        regions)
     ),
-    column(4,
+    column(2,
            checkboxGroupInput("transition",
                               label = "Transition",
                               choices = transitions,
                               selected = transitions)
     ),
-    column(4,
+    column(2,
            checkboxGroupInput("ad_mit",
                               label = "Adaptation/Mitigation",
                               choices = ad_mit,
                               selected = ad_mit)
+    ),
+    column(2,
+           checkboxGroupInput("tll",
+                              label = "Potential for trade-offs or co-benefits",
+                              choices = tll,
+                              selected = tll)
+    ),
+    column(2,
+           checkboxGroupInput("tlc",
+                              label = "Confidence",
+                              choices = tlc,
+                              selected = tlc)
+    ),
+    column(2,
+           checkboxGroupInput("cs",
+                              label = "Context sensitivity",
+                              choices = cs,
+                              selected = cs)
     )
   ),
   
   tabsetPanel(
     tabPanel("Level 1", matvisOutput("level1")),
-    tabPanel("Level 2", matvisOutput("level2"))
+    tabPanel("Level 2", matvisOutput("level2")),
+    tabPanel("Combined", matvisOutput("combined")),
+    tabPanel("About", htmlTemplate("static/about.html"))
   )
 )
 
@@ -113,6 +108,10 @@ server <- function(input, output){
 
   output$level2 <- renderMatvis({
     matvis("Level 2", 2, input = input)
+  })
+
+  output$combined <- renderMatvis({
+    matvis("Combined", 1:2, input = input)
   })
 }
 
